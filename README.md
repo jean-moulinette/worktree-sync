@@ -19,7 +19,7 @@ The band is hidden when the session isn't in a worktree. `/sync-to-local` and `/
 In a Claude Code terminal session:
 
 ```
-/plugin install worktree-sync --marketplace <owner>/<repo>
+/plugin install worktree-sync --marketplace jean-moulinette/worktree-sync
 ```
 
 Answer `y` to add the marketplace, then pick the user scope. It then loads in every session, including the desktop app's Code tab.
