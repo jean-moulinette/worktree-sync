@@ -13,7 +13,7 @@ After a sync, your local checkout is on the test branch:
 
 ![The band after a sync: Update local and Back to main buttons](docs/after-sync.png)
 
-The band is hidden when the session isn't in a worktree. `/sync-to-local` and `/restore-local` do the same as the buttons.
+The band is hidden when the session isn't in a worktree, and stays hidden until the worktree has commits or uncommitted changes. If your main checkout is still on the worktree's `test/…` branch, the band stays visible so you can always go back. `/sync-to-local` and `/restore-local` do the same as the buttons.
 
 ## Safety
 
