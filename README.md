@@ -5,6 +5,14 @@ A Claude Code mod for sessions that work in a git worktree. A band above the pro
 - **⤓ Bring to local**: switches your main checkout to a `test/<worktree-branch>` branch at the worktree's latest commit and copies the worktree's uncommitted changes there, staged. Press it again (**↻ Update local**) after more work to refresh.
 - **↩ Back to `<branch>`**: drops the copied changes, returns your main checkout to the branch it was on before the first sync, and deletes the `test/…` branch.
 
+Before a sync:
+
+![The band in a worktree session, before a sync: the worktree branch, its commit and uncommitted counts, and a Bring to local button](docs/before-sync.png)
+
+After a sync, your local checkout is on the test branch:
+
+![The band after a sync: Update local and Back to main buttons](docs/after-sync.png)
+
 The band is hidden when the session isn't in a worktree. `/sync-to-local` and `/restore-local` do the same as the buttons.
 
 ## Safety
