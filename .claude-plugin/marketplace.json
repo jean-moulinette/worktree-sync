@@ -1,0 +1,13 @@
+{
+  "name": "worktree-sync",
+  "owner": {
+    "name": "JB"
+  },
+  "description": "Claude Code mod: see whether a session works in a git worktree and bring its changes into your main checkout",
+  "plugins": [
+    {
+      "name": "worktree-sync",
+      "source": "./"
+    }
+  ]
+}
