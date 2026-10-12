@@ -2,6 +2,9 @@
   "name": "worktree-sync",
   "version": "0.1.0",
   "description": "Shows whether the session works in a git worktree, with a button that brings its commits and changes into your main checkout",
-  "author": { "name": "JB" },
+  "author": {
+    "name": "jean-moulinette",
+    "url": "https://github.com/jean-moulinette"
+  },
   "types": "./types/index.d.ts"
 }
