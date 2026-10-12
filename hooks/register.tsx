@@ -277,6 +277,14 @@ export const register: Register = on => {
       return next(e)
     }
 
+    // A fresh worktree has nothing to bring over; stay visible while the local
+    // checkout holds a sync, so it can still go back.
+    const isSynced = current.mainBranch === current.syncBranch
+    const hasWork = current.ahead !== 0 || current.changed > 0
+    if (!hasWork && !isSynced) {
+      return next(e)
+    }
+
     const { Box, Text, Button } = $.ui.resolve(e)
 
     const running = await read($, busy)
@@ -286,7 +294,6 @@ export const register: Register = on => {
     const changes = current.changed === 0 ? '' : ` · ${current.changed} uncommitted`
 
     const target = folder(current.mainRoot)
-    const isSynced = current.mainBranch === current.syncBranch
     const syncLabel =
       running === 'sync' ? '⏳ Syncing…' : isSynced ? '↻ Update local' : '⤓ Bring to local'
 

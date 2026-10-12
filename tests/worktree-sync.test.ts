@@ -17,7 +17,13 @@ const BAND = {
   },
 } as const
 
-type Repo = { isWorktree: boolean; mainStatus?: string }
+type Repo = {
+  isWorktree: boolean
+  mainStatus?: string
+  ahead?: string
+  worktreeStatus?: string
+  mainBranch?: string
+}
 
 const fakeGit = (on: On, repo: Repo, calls: string[]) => {
   mock.clock(on)
@@ -29,7 +35,7 @@ const fakeGit = (on: On, repo: Repo, calls: string[]) => {
     const { Box } = $.ui.resolve(e)
     return h(Box, {}) as RenderElement
   })
-  let mainBranch = 'main'
+  let mainBranch = repo.mainBranch ?? 'main'
   let syncTip: string | null = null
   on('process.run', async (_$, e) => {
     const [tool, ...args] = e.argv
@@ -65,8 +71,8 @@ const fakeGit = (on: On, repo: Repo, calls: string[]) => {
     if (cmd.endsWith('--git-common-dir')) return out('/repo/.git')
     if (cmd === 'worktree list --porcelain') return out(`worktree ${MAIN}\nHEAD aaa\n\nworktree ${WORKTREE}`)
     if (cmd === 'rev-parse --abbrev-ref origin/HEAD') return out('origin/main')
-    if (cmd.startsWith('rev-list --count')) return out('2')
-    if (cmd === 'status --porcelain') return out(inMain ? (repo.mainStatus ?? '') : ' M a.ts\n?? b.ts')
+    if (cmd.startsWith('rev-list --count')) return out(repo.ahead ?? '2')
+    if (cmd === 'status --porcelain') return out(inMain ? (repo.mainStatus ?? '') : (repo.worktreeStatus ?? ' M a.ts\n?? b.ts'))
     if (cmd === 'rev-parse HEAD') return out(inMain ? 'mainsha' : 'headsha')
     if (cmd === 'write-tree') return out('snaptree')
     if (cmd === 'rev-parse headsha^{tree}') return out('headtree')
@@ -137,4 +143,24 @@ test('after a sync, the back button returns the main checkout to its branch', as
   expect(calls).toContain('main: git checkout -q main')
   expect(calls).toContain('main: git branch -q -D test/claude/feature')
   expect(await ui.find({ key: 'restore' })).toBeUndefined()
+})
+
+test('a worktree with no commits and no changes shows no band', async ($, on) => {
+  fakeGit(on, { isWorktree: true, ahead: '0', worktreeStatus: '' }, [])
+  await $.session.start({ cwd: WORKTREE, surface: 'desktop', isInteractive: true })
+
+  const ui = await $.ui.mount({ ...BAND, surface: 'desktop' })
+  expect(await ui.find({ key: 'sync' })).toBeUndefined()
+})
+
+test('an empty worktree still shows the band while the local checkout holds its sync', async ($, on) => {
+  fakeGit(
+    on,
+    { isWorktree: true, ahead: '0', worktreeStatus: '', mainBranch: 'test/claude/feature' },
+    [],
+  )
+  await $.session.start({ cwd: WORKTREE, surface: 'desktop', isInteractive: true })
+
+  const ui = await $.ui.mount({ ...BAND, surface: 'desktop' })
+  expect((await ui.find({ key: 'sync' }))?.text).toBe('↻ Update local')
 })
